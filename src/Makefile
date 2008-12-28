@@ -2,19 +2,24 @@
 
 ## - if you have multiple versions, pick the highest one
 EI=$(shell ls -d /usr/local/lib/erlang/lib/erl_interface* | sort -n |tail -1)
-DIST=../dist
+VER=1.0
+DIST=../libgeoip-$(VER)
 LIBGEOIP=geoipport
 
 ## - default macports install location for libgeoip
 GEOIP_LIBS=/opt/local
 
+.SUFFIXES: .beam .erl
+ERL_FILES=$(wildcard *.erl)
+DIST_ERL=$(ERL_FILES:%erl=$(DIST)/ebin/%beam)
 
-dist: ../dist/ $(LIBGEOIP) $(DIST)/ebin/libgeoip.beam \
-$(DIST)/priv/$(LIBGEOIP) $(DIST)/include/libgeoip.hrl $(DIST)/src/libgeoip.erl
+
+dist: $(DIST) $(DIST_ERL) $(LIBGEOIP) $(DIST)/ebin/libgeoip_app.app \
+$(DIST)/priv/$(LIBGEOIP) $(DIST)/include/libgeoip.hrl
 
 ## - Setting up directory structure
 
-../dist/:
+$(DIST):
 	mkdir -p $(DIST)/{src,ebin,priv,include}
 
 $(DIST)/priv/$(LIBGEOIP): $(LIBGEOIP)
@@ -23,13 +28,14 @@ $(DIST)/priv/$(LIBGEOIP): $(LIBGEOIP)
 $(DIST)/include/libgeoip.hrl: libgeoip.hrl
 	cp libgeoip.hrl $(DIST)/include
 
-$(DIST)/src/libgeoip.erl: libgeoip.erl
-	cp libgeoip.erl $(DIST)/src
+$(DIST)/ebin/libgeoip_app.app: libgeoip_app.app
+	cp $< $(dir $@)
 
 ## - Compiling erl and the port
 
-$(DIST)/ebin/libgeoip.beam: libgeoip.erl
-	erlc -W +debug_info -o $(DIST)/ebin libgeoip.erl
+$(DIST)/ebin/%.beam: %.erl Makefile
+	erlc -W +debug_info -o $(dir $@)  $<
+	cp $< $(DIST)/src
 
 $(LIBGEOIP): geoipport.c erl_comm.c geohash.c Makefile
 	gcc -Wall -Os -L$(GEOIP_LIBS)/lib -I$(GEOIP_LIBS)/include \

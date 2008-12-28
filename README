@@ -23,7 +23,25 @@ installation: build it.
               edit src/Makefile if erlang isn't in /usr/local/lib/erlang
               put everything in dist/ where you need it to be
 
-usage [API]:
+usage [APPLICATION]:
+% erl -pz ./libgeoip-erlang/libgeoip-1.0/ebin/
+
+Eshell V5.6.5  (abort with ^G)
+1> application:start(libgeoip_app).
+ok
+2> libgeoip:set_db("/usr/local/maxmind/data/GeoLiteCity.dat").
+db_set
+3> libgeoip:lookup(<<192,90,64,2>>).
+{geoip,"US","MA","Massachusetts","Billerica","01821",
+       42.54930114746094,-71.25579833984375,"drt649c5es9g"}
+4> libgeoip:lookup(<<2,2,2,2>>).    
+[]
+
+
+usage [DIRECT]:
+% erl -pz ./libgeoip-erlang/libgeoip-1.0/ebin/
+
+Eshell V5.6.5  (abort with ^G)
 1> libgeoip:start_link("/usr/local/maxmind/data/GeoLiteCity.dat").
 {ok, (State)}
 2> libgeoip:lookup(<<66,23,219,241>>).
@@ -36,4 +54,16 @@ usage [API]:
        city = "Mountain View",postal = "94043",
        lat = 37.4192008972168,lng = -122.05740356445313,
        geohash = "9q9hyebw8ke7"}
+5> libgeoip:lookup(<<172,16,5,20>>). 
+[]
 
+
+Notes:
+  - You must set the DB path by:
+    - libgeoip:start_link("DB Path").
+      - OR -
+    - libgeoip:set_db("DB Path").
+  - You can change the DB path at any time.
+  - If you upgrade your database in-place you need to set_db to clear out
+    the old DB and load the new one.
+  - Failure to set the DB path results in lookup/1 timing out.

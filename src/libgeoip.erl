@@ -3,22 +3,32 @@
 
 -behaviour(gen_server).
 
--export([start_link/1]).
+-export([start_link/0, start_link/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
 
--export([lookup/1]).
+-export([lookup/1, set_db/1]).
 
 -export([test/0]).
 
+
+start_link() ->
+  start_link([]).
 
 start_link(DBName) ->
   gen_server:start_link({local, ?MODULE}, ?MODULE, DBName, []).
 
 init(DBName) -> 
-  GeoIP = open_port({spawn, "geoipport"}, [{packet, 2}, binary]),
+  Path = case code:priv_dir(libgeoip) of
+           {error, bad_name} -> "";
+           Found -> Found ++ "/"
+         end,
+  GeoIP = open_port({spawn, Path ++ "geoipport"}, [{packet, 2}, binary]),
   process_flag(trap_exit, true),
-  port_command(GeoIP, term_to_binary(DBName)),
+  case DBName of
+    [] -> ok;
+     _ -> port_command(GeoIP, term_to_binary(DBName))
+  end,
   {ok, [GeoIP]}.
 
 
@@ -31,8 +41,11 @@ handle_call({lookup, IP}, _From, [GeoIP1] = State) ->
   receive 
     {GeoIP1, {data, Term}} -> {reply, binary_to_term(Term), State}
   after
-    1200 -> {reply, timeout, State}
-  end.
+    200 -> {reply, timeout, State}
+  end;
+handle_call({set_db, DBPath}, _From, [GeoIP1] = State) ->
+  port_command(GeoIP1, term_to_binary(DBPath)),
+  {reply, db_set, State}.
 
 %%%----------------------------------------------------------------------
 %%% unimplemented gen_server callbacks
@@ -53,6 +66,9 @@ lookup(<<_A,_B,_C,_D>> = IP) ->
 lookup(IP) when is_integer(IP) ->
   gen_server:call(?MODULE, {lookup, IP}).
 
+set_db(DBPath) ->
+  gen_server:call(?MODULE, {set_db, DBPath}).
+  
 %%%----------------------------------------------------------------------
 %%% quick and dirty testing
 %%%----------------------------------------------------------------------
