@@ -1,0 +1,39 @@
+
+who:   matt@genges.com
+what:  erlang port for libgeoip.  supports GeoIPCity and GeoLiteCity DBs.
+when:  made December 2008. published December 2008.
+where: everywhere
+why:   I don't like having to do external service calls for geo lookups.
+
+prereqs:
+  - libgeoip
+    - yum: yum install GeoIP GeoIP-devel
+    - macports: port install libgeoip
+    - freebsd: ports/net/GeoIP/
+    - or download from http://www.maxmind.com/app/c
+  - maxmind City data source
+    - Download latest free version (updated monthly):
+      http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+    - Or, buy their slightly more accurate DB for $370:
+      https://www.maxmind.com/app/cart?add_product_id=132
+
+performance: 6600 to 7000 lookups per second on my dual 2.0GHz iMac.
+
+installation: build it.  
+              edit src/Makefile if erlang isn't in /usr/local/lib/erlang
+              put everything in dist/ where you need it to be
+
+usage [API]:
+1> libgeoip:start_link("/usr/local/maxmind/data/GeoLiteCity.dat").
+{ok, (State)}
+2> libgeoip:lookup(<<66,23,219,241>>).
+{geoip,"US","GA","Georgia","Lawrenceville","30043",
+       34.00910186767578,-84.00879669189453,"dnh32r4tmhhf"}
+3> rr(libgeoip).
+[geoip]
+4> libgeoip:lookup(<<209,85,171,100>>).
+#geoip{country = "US",region = "CA",state = "California",
+       city = "Mountain View",postal = "94043",
+       lat = 37.4192008972168,lng = -122.05740356445313,
+       geohash = "9q9hyebw8ke7"}
+
