@@ -17,14 +17,19 @@ prereqs:
     - Or, buy their slightly more accurate DB for $370:
       https://www.maxmind.com/app/cart?add_product_id=132
 
-performance: 6600 to 7000 lookups per second on my dual 2.0GHz iMac.
+performance: 6600 to 7000 lookups per second
+benchmark versus egeoip: 
+  a typical result (+hipe) is:
+      libgeoip-erlang: 7057 lookups per second
+               egeoip: 5498 lookups per second
+  resulting in libgeoip-erlang being about 28% faster than egeoip.
 
 installation: build it.  
               edit src/Makefile if erlang isn't in /usr/local/lib/erlang
               put everything in dist/ where you need it to be
 
 usage [APPLICATION]:
-% erl -pz ./libgeoip-erlang/libgeoip-1.0/ebin/
+% erl -pz ./libgeoip-erlang/libgeoip-VER/ebin/
 
 Eshell V5.6.5  (abort with ^G)
 1> application:start(libgeoip_app).
@@ -64,6 +69,6 @@ Notes:
       - OR -
     - libgeoip:set_db("DB Path").
   - You can change the DB path at any time.
-  - If you upgrade your database in-place you need to set_db to clear out
+  - If you upgrade your database in-place you must set_db to clear out
     the old DB and load the new one.
   - Failure to set the DB path results in lookup/1 timing out.
