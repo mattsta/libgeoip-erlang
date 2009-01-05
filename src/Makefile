@@ -2,7 +2,7 @@
 
 ## - if you have multiple versions, pick the highest one
 EI=$(shell ls -d /usr/local/lib/erlang/lib/erl_interface* | sort -n |tail -1)
-VER=1.0
+VER=1.0.1
 DIST=../libgeoip-$(VER)
 LIBGEOIP=geoipport
 
@@ -40,7 +40,8 @@ $(DIST)/ebin/%.beam: %.erl Makefile
 $(LIBGEOIP): geoipport.c erl_comm.c geohash.c Makefile
 	gcc -Wall -Os -L$(GEOIP_LIBS)/lib -I$(GEOIP_LIBS)/include \
 -L$(EI)/lib/ -I$(EI)/include/ \
--o $(LIBGEOIP) erl_comm.c geoipport.c geohash.c -lerl_interface -lei -lgeoip
+-o $(LIBGEOIP) erl_comm.c geoipport.c geohash.c -lerl_interface -lei -lGeoIP \
+-lpthread
 
 ## - Comments are fun
 
