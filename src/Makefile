@@ -1,7 +1,8 @@
 .PHONY: dist clean 
 
 ## - if you have multiple versions, pick the highest one
-EI=$(shell ls -d /usr/local/lib/erlang/lib/erl_interface* | sort -n |tail -1)
+OTP_LIB_DIR:= $(shell erl -noshell -eval 'io:format("~s", [code:lib_dir()])' -s erlang halt)
+EI=$(shell ls -d $(OTP_LIB_DIR)/erl_interface* | sort -n |tail -1)
 VER=1.0.1
 DIST=../libgeoip-$(VER)
 LIBGEOIP=geoipport
