@@ -23,7 +23,8 @@ init(DBName) ->
            {error, bad_name} -> "";
            Found -> Found ++ "/"
          end,
-  GeoIP = open_port({spawn, Path ++ "geoipport"}, [{packet, 2}, binary]),
+         io:format("Path is: ~p~n", [Path]),
+  GeoIP = open_port({spawn, Path ++ "libgeoip"}, [{packet, 2}, binary]),
   process_flag(trap_exit, true),
   case DBName of
     [] -> ok;

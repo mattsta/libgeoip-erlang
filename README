@@ -2,6 +2,7 @@
 who:   matt@genges.com
 what:  erlang port for libgeoip.  supports GeoIPCity and GeoLiteCity DBs.
 when:  made December 2008. published December 2008.
+when2: Last updated October 2010.  Rebar-ized and added license.
 where: everywhere
 why:   I don't like having to do external service calls for geo lookups.
 
@@ -24,12 +25,16 @@ benchmark versus egeoip:
                egeoip: 5498 lookups per second
   resulting in libgeoip-erlang being about 28% faster than egeoip.
 
-installation: build it.  
-              edit src/Makefile if erlang isn't in /usr/local/lib/erlang
-              put everything in dist/ where you need it to be
+Building Instructions:
+         > rebar compile
+         You may need to edit rebar.config if your maxmind headers and
+         objects aren't in /opt/local.
+
+Note: You must have the libgeoip directory name *in* your path for libgeoip to
+find the correct port to run.
 
 usage [APPLICATION]:
-% erl -pz ./libgeoip-erlang/libgeoip-VER/ebin/
+> erl -pz ../ligeoip-erlang/ebin -pz ../libgeoip-erlang/priv
 
 Eshell V5.6.5  (abort with ^G)
 1> application:start(libgeoip_app).
@@ -44,7 +49,7 @@ db_set
 
 
 usage [DIRECT]:
-% erl -pz ./libgeoip-erlang/libgeoip-1.0/ebin/
+> erl -pz ../libgeoip-erlang/ebin -pz ../libgeoip-erlang/priv
 
 Eshell V5.6.5  (abort with ^G)
 1> libgeoip:start_link("/usr/local/maxmind/data/GeoLiteCity.dat").

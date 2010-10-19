@@ -2,3 +2,6 @@ syntax: glob
 dist/
 src/geoipport
 libgeoip-*
+priv/
+ebin/
+c_src/*.o

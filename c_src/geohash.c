@@ -2,6 +2,7 @@
  | direct JS -> C port of encodeGeoHash (ugly formatting and all) from:
  | http://github.com/davetroy/geohash-js/tree/master/geohash.js
  | no decoding or adjacency finding implemented (or required) yet
+ | geohash.js is MIT licensed as is this translation of it.
  */
 
 int BITS[] = {16, 8, 4, 2, 1};
